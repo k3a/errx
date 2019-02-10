@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"ndemiccreations.com/gameservices/pkg/errx"
+	"github.com/k3a/errx"
 )
 
 func TestPrivate(t *testing.T) {
