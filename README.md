@@ -1,3 +1,7 @@
+[![GoDoc](https://godoc.org/github.com/k3a/errx?status.svg)](https://godoc.org/github.com/k3a/errx)
+[![Coverage Status](https://coveralls.io/repos/k3a/errx/badge.svg?branch=master&service=github)](https://coveralls.io/github/k3a/errx?branch=master)
+[![Report Card](https://goreportcard.com/badge/github.com/k3a/errx)](https://goreportcard.com/report/github.com/k3a/errx)
+
 # ErrX
 Error object for Go with private/public part, attributes and stack traces.
 
