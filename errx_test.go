@@ -10,7 +10,7 @@ import (
 
 func TestPrivate(t *testing.T) {
 	pubMsg := "unexpected database error"
-	err := errx.Err(sql.ErrNoRows).Private(pubMsg)
+	err := errx.Err(sql.ErrNoRows).Public(pubMsg)
 
 	if err.Error() != pubMsg {
 		t.Fatalf("short error is not returning public message: %s != %s", err.Error(), pubMsg)
@@ -38,7 +38,7 @@ func databaseError() error {
 
 func requestErrorPrivate() error {
 	if err := databaseError(); err != nil {
-		return errx.Err(err).Private("unable to save data")
+		return errx.Err(err).Public("unable to save data")
 	}
 
 	return nil
@@ -46,7 +46,7 @@ func requestErrorPrivate() error {
 
 func requestErrorPrivateWithMessage() error {
 	if err := databaseError(); err != nil {
-		return errx.Err(err, "error processing request").Private("unable to save data")
+		return errx.Err(err, "error processing request").Public("unable to save data")
 	}
 
 	return nil
@@ -75,7 +75,7 @@ func TestHierarchyPrivate(t *testing.T) {
 	// private part with additional message
 	err = requestErrorPrivateWithMessage()
 	fullErrStr = errx.FullError(err)
-	if fullErrStr != `(unable to save data) error processing request: database error: sql: no rows in result set` {
+	if fullErrStr != `unable to save data: error processing request: database error: sql: no rows in result set` {
 		t.Fatalf("unexpected full error format with message: %s", fullErrStr)
 	}
 

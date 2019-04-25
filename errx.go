@@ -83,7 +83,7 @@ func (e *Error) FullError() string {
 	msg := e.publicMessage
 
 	if len(e.publicMessage) > 0 && len(e.message) > 0 {
-		msg = "(" + e.publicMessage + ") "
+		msg += ": "
 	}
 	msg += e.message
 
@@ -135,14 +135,18 @@ func (e *Error) StackTrace() string {
 	return str
 }
 
-// Private marks this error and parents as private.
-// Private errors return public messages only.
+// Public marks this error and parents as private and uses the optional
+// provided arguments to format a user-facing, user-friendly message.
 //
-// Argument is an optional format string with formating arguments.
-// Resulting sting is used as a public message.
+// The returned error is "public" which means that calling .Error() on it
+// returns just the public part of the message.
 //
-// Example: Private("this is public user-facing msg: %s", additionalString)
-func (e *Error) Private(fmtArgs ...interface{}) *Error {
+// errx-aware libraries and apps can convert such errors to full errx errors
+// and use stored data using global-level functions like
+// errx.FullError, errx.GetAttr.
+//
+// Example: Public("this is public user-facing msg: %s", additionalString)
+func (e *Error) Public(fmtArgs ...interface{}) *Error {
 	msg := genericPublicMessage
 
 	for i, a := range fmtArgs {
@@ -185,10 +189,20 @@ func (e *Error) GetAttrs() Attributes {
 	return ret
 }
 
-// Err creates a new error.
-// Argument can be a parent error or format string with formating arguments.
+// Err returns or creates a new errx.Error.
+// Argument can be a parent error and/or a format string with formating arguments.
 // Example: Err(err, "error reading file %s", path)
+//
+// If there is only a single argument passed and it is errx.Error type,
+// it just returns a type-casted pointer to it so that one can continue
+// working with the error object.
 func Err(args ...interface{}) *Error {
+	if len(args) == 1 && args[0] != nil {
+		if exerr, ok := args[0].(*Error); ok {
+			return exerr
+		}
+	}
+
 	err := new(Error)
 
 	if RecordStackTrace {
